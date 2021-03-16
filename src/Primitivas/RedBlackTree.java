@@ -25,6 +25,7 @@ public class RedBlackTree {
     }
 
     //  ------------------ Main methods ------------------ //
+    
     public void add(String name, String surname, int identity) {
         Citizen newCitizen = new Citizen(name, surname, identity);
         TreeNode newNode = new TreeNode(newCitizen, "red", this.treeNIL, this.treeNIL);
@@ -58,11 +59,11 @@ public class RedBlackTree {
         if (newNode.getParent().getParent() == null) {
             return;
         }
-
-        //adjustAdd(newNode);
+        adjustAdd(newNode);
     }
 
     public void remove(int identity) {
+        
         TreeNode auxRoot = this.treeRoot;
         TreeNode aux = treeNIL;
         TreeNode child, min;
@@ -108,17 +109,135 @@ public class RedBlackTree {
             min.getLeft().setParent(min);
             min.setColor(aux.getColor());
         }
-        // if (minOriginalColor == 0) {
-        ///adjustRemove(child);
-        //}
+        if (minOriginalColor.equals("black")) {
+            adjustRemove(child);
+        }
     }
 
 // -------------- Adjust Tree Methods -------------- //
-/*  private void adjustRemove( TreeNode node) {
-        TreeNode sibling;
-        while (node != treeRoot  )
+    
+    private void adjustAdd(TreeNode node) {
+
+        TreeNode aux;
+
+        while (node.getParent().getColor().equals("red")) {
+
+            if (node.getParent() == node.getParent().getParent().getRight()) {
+                aux = node.getParent().getParent().getLeft();
+
+                if (aux.getColor().equals("red")) {
+                    aux.setColor("black");
+                    node.getParent().setColor("black");
+                    node.getParent().getParent().setColor("red");
+                    node = node.getParent().getParent();
+
+                } else {
+
+                    if (node == node.getParent().getLeft()) {
+                        node = node.getParent();
+                        rotationRight(node);
+                    }
+                    node.getParent().setColor("black");
+                    node.getParent().getParent().setColor("red");
+                    rotationLeft(node.getParent().getParent());
+                }
+
+            } else {
+
+                aux = node.getParent().getParent().getRight();
+
+                if (aux.getColor() == "red") {
+                    aux.setColor("black");
+                    node.getParent().setColor("black");
+                    node.getParent().getParent().setColor("red");
+                    node = node.getParent().getParent();
+                } else {
+                    if (node == node.getParent().getRight()) {
+                        node = node.getParent();
+                        rotationLeft(node);
+                    }
+                    node.getParent().setColor("black");
+                    node.getParent().getParent().setColor("red");
+
+                    rotationRight(node.getParent().getParent());
+                }
+            }
+            if (node == treeRoot) {
+                break;
+            }
+        }
+        treeRoot.setColor("black");
     }
-     */
+
+    private void adjustRemove(TreeNode node) {
+
+        TreeNode sibling;
+
+        while (node != treeRoot && node.getColor().equals("black")) {
+
+            if (node == node.getParent().getLeft()) {
+                sibling = node.getParent().getRight();
+
+                if (node.getColor().equals("red")) {
+                    node.setColor("black");
+                    node.getParent().setColor("red");
+                    rotationLeft(node.getParent());
+                    sibling = node.getParent().getRight();
+                }
+
+                if (sibling.getLeft().getColor().equals("black") && sibling.getRight().getColor().equals("black")) {
+                    sibling.setColor("red");
+                    node = node.getParent();
+
+                } else {
+                    if (sibling.getLeft().getColor().equals("black")) {
+                        sibling.getLeft().setColor("black");
+                        sibling.setColor("red");
+                        rotationRight(sibling);
+                        sibling = node.getParent().getRight();
+                    }
+
+                    sibling.setColor(node.getParent().getColor());
+                    node.getParent().setColor("black");
+                    sibling.getRight().setColor("black");
+                    rotationLeft(node.getParent());
+                    node = treeRoot;
+                }
+
+            } else {
+                sibling = node.getParent().getLeft();
+
+                if (node.getColor().equals("red")) {
+                    sibling.setColor("black");
+                    node.getParent().setColor("red");
+                    rotationRight(node.getParent());
+                    sibling = node.getParent().getLeft();
+                }
+
+                if ("black".equals(sibling.getRight().getColor()) && sibling.getRight().getColor().equals("black")) {
+                    sibling.setColor("red");
+                    node = node.getParent();
+
+                } else {
+
+                    if (sibling.getLeft().getColor().equals("black")) {
+                        sibling.getRight().setColor("black");
+                        sibling.setColor("red");
+                        rotationLeft(sibling);
+                        sibling = node.getParent().getLeft();
+                    }
+
+                    sibling.setColor(node.getParent().getColor());
+                    node.getParent().setColor("black");
+                    sibling.getLeft().setColor("black");
+                    rotationRight(node.getParent());
+                    node = treeRoot;
+                }
+            }
+        }
+        node.setColor("black");
+    }
+    
 // ---------- Complementary Methods ------------  //
     public void rotationLeft(TreeNode node) {
         TreeNode auxNode = node.getRight();
@@ -173,6 +292,30 @@ public class RedBlackTree {
             u.getParent().setRight(v);
         }
         v.setParent(u.getParent());
+    }
+    
+      // --------------- Checkout methods --------------- //
+
+    public void printTree() {
+        printHelper(this.treeRoot, "", true);
+    }
+
+    private void printHelper(TreeNode root, String indent, boolean last) {
+        if (root != treeNIL) {
+            System.out.print(indent);
+            if (last) {
+                System.out.print("R----");
+                indent += "   ";
+            } else {
+                System.out.print("L----");
+                indent += "|  ";
+            }
+
+            String sColor = root.getColor() == "red" ? "RED" : "BLACK";
+            System.out.println(root.getPerson().getIdentity() + "(" + sColor + ")");
+            printHelper(root.getLeft(), indent, false);
+            printHelper(root.getRight(), indent, true);
+        }
     }
     
     // ------------------ Gets & Setters ------------------ //
