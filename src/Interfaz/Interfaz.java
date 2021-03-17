@@ -98,6 +98,7 @@ public class Interfaz extends javax.swing.JFrame {
         jPanel1.add(buttonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 320, 150, -1));
 
         buttonBuscar.setText("Buscar");
+        buttonBuscar.setEnabled(false);
         buttonBuscar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonBuscarActionPerformed(evt);
@@ -142,6 +143,7 @@ public class Interfaz extends javax.swing.JFrame {
                     this.buttonAniadir.setEnabled(true);
                     this.buttonEliminar.setEnabled(true);
                     this.buttonGuardar.setEnabled(true);
+                    this.buttonBuscar.setEnabled(true);
                 } else {
                     JOptionPane.showMessageDialog(null, "Revise que tenga elementos el csv aparte del encabezado", "Error!", JOptionPane.ERROR_MESSAGE);
                 }

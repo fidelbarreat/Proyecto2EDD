@@ -254,7 +254,7 @@ public class RedBlackTree {
             node.getParent().setRight(auxNode);
         }
         auxNode.setLeft(node);
-        node.setParent(node);
+        node.setParent(auxNode);
     }
 
     public void rotationRight(TreeNode node) {
