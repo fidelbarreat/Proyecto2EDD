@@ -31,7 +31,20 @@ public class RedBlackTree {
         TreeNode newNode = new TreeNode(newCitizen, "red", this.treeNIL, this.treeNIL);
 
         TreeNode temp = null;
-        TreeNode aux = this.treeRoot;
+        TreeNode aux, auxRoot;
+        aux = auxRoot = this.treeRoot;
+        
+        while (auxRoot != treeNIL) {
+            if (auxRoot.getPerson().getIdentity() == identity) {
+                JOptionPane.showMessageDialog(null, "La cédula introducida ya existe, intentelo nuevamente");
+                return;
+            }
+            if (auxRoot.getPerson().getIdentity() <= identity) {
+                auxRoot = auxRoot.getRight();
+            } else {
+                auxRoot = auxRoot.getLeft();
+            }
+        }
 
         while (aux != treeNIL) {
             temp = aux;
