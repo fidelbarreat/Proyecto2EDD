@@ -152,6 +152,7 @@ public class Interfaz extends javax.swing.JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Revise que sea un archivo válido", "Error!", JOptionPane.ERROR_MESSAGE);
         }
+        this.arbol.printTree();
     }//GEN-LAST:event_buttonCargarCsvActionPerformed
 
     private void buttonAniadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAniadirActionPerformed

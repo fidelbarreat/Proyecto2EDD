@@ -179,7 +179,7 @@ public class RedBlackTree {
                 sibling = node.getParent().getRight();
 
                 if (node.getColor().equals("red")) {
-                    node.setColor("black");
+                    sibling.setColor("black");
                     node.getParent().setColor("red");
                     rotationLeft(node.getParent());
                     sibling = node.getParent().getRight();
@@ -190,7 +190,7 @@ public class RedBlackTree {
                     node = node.getParent();
 
                 } else {
-                    if (sibling.getLeft().getColor().equals("black")) {
+                    if (sibling.getRight().getColor().equals("black")) {
                         sibling.getLeft().setColor("black");
                         sibling.setColor("red");
                         rotationRight(sibling);
@@ -207,7 +207,7 @@ public class RedBlackTree {
             } else {
                 sibling = node.getParent().getLeft();
 
-                if (node.getColor().equals("red")) {
+                if (sibling.getColor().equals("red")) {
                     sibling.setColor("black");
                     node.getParent().setColor("red");
                     rotationRight(node.getParent());
