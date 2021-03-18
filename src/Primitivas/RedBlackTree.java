@@ -36,7 +36,7 @@ public class RedBlackTree {
         
         while (auxRoot != treeNIL) {
             if (auxRoot.getPerson().getIdentity() == identity) {
-                JOptionPane.showMessageDialog(null, "La cédula introducida ya existe, intentelo nuevamente");
+                JOptionPane.showMessageDialog(null, "La cédula introducida ya existe, intentelo nuevamente",  "Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (auxRoot.getPerson().getIdentity() <= identity) {
@@ -93,7 +93,7 @@ public class RedBlackTree {
         }
 
         if (aux == treeNIL) {
-            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada");
+            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada" , "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -126,7 +126,31 @@ public class RedBlackTree {
             adjustRemove(child);
         }
     }
+    
+    public void search(int identity) {
+        
+        TreeNode nodeToFind = treeNIL;
+        TreeNode auxRoot = this.treeRoot; 
+        
+        while (auxRoot != treeNIL) {
+            if (auxRoot.getPerson().getIdentity() == identity) {
+                nodeToFind = auxRoot;
+            }
+            if (auxRoot.getPerson().getIdentity() <= identity) {
+                auxRoot = auxRoot.getRight();
+            } else {
+                auxRoot = auxRoot.getLeft();
+            }
+        }
 
+        if (nodeToFind == treeNIL) {
+            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada", "Error", JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Nombre completo: " + nodeToFind.getPerson().getFirstName() + " " 
+                            + nodeToFind.getPerson().getLastName()
+                            + "\nCédula de identidad: " + nodeToFind.getPerson().getIdentity(), "Información del ciudadano", JOptionPane.INFORMATION_MESSAGE) ;
+        }
+    }
 // -------------- Adjust Tree Methods -------------- //
     
     private void adjustAdd(TreeNode node) {
