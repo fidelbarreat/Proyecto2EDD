@@ -30,7 +30,7 @@ public class RedBlackTree {
     //  ------------------ Main methods ------------------ //
     
     public boolean esVacia() {
-        return treeRoot == null;
+        return treeRoot.getPerson() == null;
     }
     
     public void add(String name, String surname, int identity) {
