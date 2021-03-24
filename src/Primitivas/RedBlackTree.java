@@ -1,6 +1,9 @@
 package Primitivas;
 
 import javax.swing.JOptionPane;
+import com.csvreader.CsvWriter;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.MultiGraph;
 
 /**
  * @author Yasmin Hammoud
@@ -15,7 +18,7 @@ public class RedBlackTree {
         this.treeNIL = new TreeNode(null, "black", null, null);   // - > Hay que verificar esto
         this.treeRoot = treeNIL;
     }
-    
+
     // -------------------  Constructor 2 ------------------- //
     public RedBlackTree(String name, String surname, int identity) {
         Citizen newCitizen = new Citizen(name, surname, identity);
@@ -26,6 +29,10 @@ public class RedBlackTree {
 
     //  ------------------ Main methods ------------------ //
     
+    public boolean esVacia() {
+        return treeRoot == null;
+    }
+    
     public void add(String name, String surname, int identity) {
         Citizen newCitizen = new Citizen(name, surname, identity);
         TreeNode newNode = new TreeNode(newCitizen, "red", this.treeNIL, this.treeNIL);
@@ -33,10 +40,10 @@ public class RedBlackTree {
         TreeNode temp = null;
         TreeNode aux, auxRoot;
         aux = auxRoot = this.treeRoot;
-        
+
         while (auxRoot != treeNIL) {
             if (auxRoot.getPerson().getIdentity() == identity) {
-                JOptionPane.showMessageDialog(null, "La cédula introducida ya existe, intentelo nuevamente",  "Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "La cédula introducida ya existe, intentelo nuevamente", "Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             if (auxRoot.getPerson().getIdentity() <= identity) {
@@ -76,7 +83,7 @@ public class RedBlackTree {
     }
 
     public void remove(int identity) {
-        
+
         TreeNode auxRoot = this.treeRoot;
         TreeNode aux = treeNIL;
         TreeNode child, min;
@@ -93,7 +100,7 @@ public class RedBlackTree {
         }
 
         if (aux == treeNIL) {
-            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada" , "Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -126,12 +133,12 @@ public class RedBlackTree {
             adjustRemove(child);
         }
     }
-    
-    public void search(int identity) {
-        
+
+    public void search(int identity, MultiGraph imp) {
+
         TreeNode nodeToFind = treeNIL;
-        TreeNode auxRoot = this.treeRoot; 
-        
+        TreeNode auxRoot = this.treeRoot;
+
         while (auxRoot != treeNIL) {
             if (auxRoot.getPerson().getIdentity() == identity) {
                 nodeToFind = auxRoot;
@@ -143,16 +150,37 @@ public class RedBlackTree {
             }
         }
 
-        if (nodeToFind == treeNIL) {
-            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada", "Error", JOptionPane.WARNING_MESSAGE);
+        if (nodeToFind != treeNIL) {
+            Node tmp = imp.getNode("" + nodeToFind.getPerson().getIdentity());
+            tmp.setAttribute("ui.style", "shape:circle;fill-color: #008000;size: 35px; text-alignment: center;text-color: #000;");
+            JOptionPane.showMessageDialog(null, "Nombre completo: " + nodeToFind.getPerson().getFirstName() + " "
+                    + nodeToFind.getPerson().getLastName()
+                    + "\nCédula de identidad: " + nodeToFind.getPerson().getIdentity(), "Información del ciudadano", JOptionPane.INFORMATION_MESSAGE);
+            if (nodeToFind.getColor().equals("red")) {
+                tmp.setAttribute("ui.style", "shape:circle;fill-color: #FD0303;size: 35px; text-alignment: center;text-color: #000;");
+            } else {
+                tmp.setAttribute("ui.style", "shape:circle;fill-color: #000;size: 35px; text-alignment: center;text-color: #FFF;");
+            }
         } else {
-            JOptionPane.showMessageDialog(null, "Nombre completo: " + nodeToFind.getPerson().getFirstName() + " " 
-                            + nodeToFind.getPerson().getLastName()
-                            + "\nCédula de identidad: " + nodeToFind.getPerson().getIdentity(), "Información del ciudadano", JOptionPane.INFORMATION_MESSAGE) ;
+            JOptionPane.showMessageDialog(null, "La cédula introducida no fue localizada", "Error", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    public void recorrerImprimir(CsvWriter csvwriter, TreeNode root) {
+        try {
+            if (root.getPerson() != null) {
+                Citizen pTemp = root.getPerson();
+                String[] saPersonasCsv = {pTemp.getFirstName(), pTemp.getLastName(), Integer.toString(pTemp.getIdentity())};
+                csvwriter.writeRecord(saPersonasCsv);
+                recorrerImprimir(csvwriter, root.getLeft());
+                recorrerImprimir(csvwriter, root.getRight());
+            }
+        } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Hubo un error con el ciudadano: " + root.getPerson().getIdentity(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
 // -------------- Adjust Tree Methods -------------- //
-    
+
     private void adjustAdd(TreeNode node) {
 
         TreeNode aux;
@@ -274,7 +302,7 @@ public class RedBlackTree {
         }
         node.setColor("black");
     }
-    
+
 // ---------- Complementary Methods ------------  //
     public void rotationLeft(TreeNode node) {
         TreeNode auxNode = node.getRight();
@@ -330,9 +358,8 @@ public class RedBlackTree {
         }
         v.setParent(u.getParent());
     }
-    
-      // --------------- Checkout methods --------------- //
 
+    // --------------- Checkout methods --------------- //
     public void printTree() {
         printHelper(this.treeRoot, "", true);
     }
@@ -354,9 +381,8 @@ public class RedBlackTree {
             printHelper(root.getRight(), indent, true);
         }
     }
-    
-    // ------------------ Gets & Setters ------------------ //
 
+    // ------------------ Gets & Setters ------------------ //
     public TreeNode getTreeRoot() {
         return treeRoot;
     }
@@ -371,6 +397,38 @@ public class RedBlackTree {
 
     public void setTreeNIL(TreeNode treeNIL) {
         this.treeNIL = treeNIL;
+    }
+
+    public static void draw(TreeNode root, MultiGraph imp, RedBlackTree arbol) {
+        if (root != arbol.getTreeNIL()) {
+            //System.out.println("aja");
+            Node tmp = imp.getNode("" + root.getPerson().getIdentity());
+
+            if (tmp == null) {
+                imp.addNode("" + root.getPerson().getIdentity());
+                tmp = imp.getNode("" + root.getPerson().getIdentity());
+            }
+
+            if (root.getColor().equals("red")) {
+                tmp.setAttribute("ui.style", "shape:circle;fill-color: #FD0303;size: 35px; text-alignment: center;");
+            } else {
+                tmp.setAttribute("ui.style", "shape:circle;fill-color: #000000;size: 35px; text-alignment: center;text-color: #FFFFFF;");
+            }
+
+            tmp.setAttribute("ui.label", "" + root.getPerson().getIdentity());
+            if (root.getLeft() != arbol.getTreeNIL()) {
+                imp.addNode("" + root.getLeft().getPerson().getIdentity());
+                imp.addEdge("" + root.getPerson().getIdentity() + ":" + root.getLeft().getPerson().getIdentity(), "" + root.getPerson().getIdentity(), "" + root.getLeft().getPerson().getIdentity());
+            }
+
+            if (root.getRight() != arbol.getTreeNIL()) {
+                imp.addNode("" + root.getRight().getPerson().getIdentity());
+                imp.addEdge("" + root.getPerson().getIdentity() + ":" + root.getRight().getPerson().getIdentity(), "" + root.getPerson().getIdentity(), "" + root.getRight().getPerson().getIdentity());
+            }
+
+            draw(root.getLeft(), imp, arbol);
+            draw(root.getRight(), imp, arbol);
+        }
     }
 
 }
